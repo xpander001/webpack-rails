@@ -21,9 +21,8 @@ module Webpack
         def asset_paths(source)
           paths = manifest["assetsByChunkName"][source]
           if paths
-            # Can be either a string or an array of strings.
-            # Do not include source maps as they are not javascript
-            [paths].flatten.reject { |p| p =~ /.*\.map$/ }.map do |p|
+            # Can be either a string or an array of strings
+            [paths].flatten.map do |p|
               "/#{::Rails.configuration.webpack.public_path}/#{p}"
             end
           else
@@ -54,7 +53,7 @@ module Webpack
 
         def load_dev_server_manifest
           Net::HTTP.get(
-            "localhost",
+            ::Rails.configuration.webpack.dev_server.host,
             dev_server_path,
             ::Rails.configuration.webpack.dev_server.port
           )
@@ -80,7 +79,7 @@ module Webpack
         end
 
         def dev_server_url
-          "http://localhost:#{::Rails.configuration.webpack.dev_server.port}#{dev_server_path}"
+          "http://#{::Rails.configuration.webpack.dev_server.host}:#{::Rails.configuration.webpack.dev_server.port}#{dev_server_path}"
         end
       end
     end
