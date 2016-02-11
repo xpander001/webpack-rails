@@ -1,6 +1,7 @@
 require 'rails'
 require 'rails/railtie'
 require 'webpack/rails/helper'
+require 'uri'
 
 module Webpack
   # :nodoc:
@@ -16,8 +17,16 @@ module Webpack
     config.webpack.binary = 'node_modules/.bin/webpack'
 
     config.webpack.dev_server = ActiveSupport::OrderedOptions.new
-    config.webpack.dev_server.host = ENV['WEBPACK_HOST'] || 'localhost'
-    config.webpack.dev_server.port = 3808
+    if ENV["WEBPACK_HOST"]
+      uri = URI.parse(ENV["WEBPACK_HOST"])
+      config.webpack.dev_server.host   = uri.host
+      config.webpack.dev_server.port   = uri.port
+      config.webpack.dev_server.scheme = uri.scheme
+    else
+      config.webpack.dev_server.host   = 'localhost'
+      config.webpack.dev_server.port   = 3808
+      config.webpack.dev_server.scheme = "http"
+    end
     config.webpack.dev_server.binary = 'node_modules/.bin/webpack-dev-server'
     config.webpack.dev_server.enabled = !::Rails.env.production?
 

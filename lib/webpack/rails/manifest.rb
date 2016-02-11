@@ -52,11 +52,12 @@ module Webpack
         end
 
         def load_dev_server_manifest
-          Net::HTTP.get(
-            ::Rails.configuration.webpack.dev_server.host,
-            dev_server_path,
-            ::Rails.configuration.webpack.dev_server.port
-          )
+          http = Net::HTTP.new(::Rails.configuration.webpack.dev_server.host, ::Rails.configuration.webpack.dev_server.port)
+          if ::Rails.configuration.webpack.dev_server.scheme == "https"
+            http.use_ssl = true
+            http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+          end
+          http.get(dev_server_path).body
         rescue => e
           raise ManifestLoadError.new("Could not load manifest from webpack-dev-server at #{dev_server_url} - is it running, and is stats-webpack-plugin loaded?", e)
         end
@@ -79,7 +80,7 @@ module Webpack
         end
 
         def dev_server_url
-          "http://#{::Rails.configuration.webpack.dev_server.host}:#{::Rails.configuration.webpack.dev_server.port}#{dev_server_path}"
+          "#{::Rails.configuration.webpack.dev_server.scheme}://#{::Rails.configuration.webpack.dev_server.host}:#{::Rails.configuration.webpack.dev_server.port}#{dev_server_path}"
         end
       end
     end
