@@ -18,10 +18,11 @@ module Webpack
         paths = Webpack::Rails::Manifest.asset_paths(source)
         host = ::Rails.configuration.webpack.dev_server.host
         port = ::Rails.configuration.webpack.dev_server.port
+        scheme = ::Rails.configuration.webpack.dev_server.scheme
 
         if ::Rails.configuration.webpack.dev_server.enabled
           paths.map! do |p|
-            "http://#{host}:#{port}#{p}"
+            "#{scheme}://#{host}:#{port}#{p}"
           end
         end
 
