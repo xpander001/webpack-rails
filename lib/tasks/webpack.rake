@@ -13,7 +13,7 @@ namespace :webpack do
       raise "Can't find our webpack config file at #{config_file}"
     end
 
-    result =  `#{webpack_bin} --bail --config #{config_file} 2>&1`
+    result =  `#{webpack_bin} --bail --config #{config_file} 2>&1 --mode production`
     raise result unless $? == 0
   end
 end
